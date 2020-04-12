@@ -16,6 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.ScrollPane?>
 <?import se.llbit.chunky.ui.DoubleAdjuster?>
+<?import se.llbit.chunky.ui.IntegerAdjuster?>
 
 <fx:root type="javafx.scene.control.ScrollPane" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
     <VBox spacing="10.0">
@@ -74,6 +75,7 @@
         </HBox>
         <DoubleAdjuster fx:id="fov" />
         <DoubleAdjuster fx:id="dof" />
+        <IntegerAdjuster fx:id="bladeAmount" />
         <DoubleAdjuster fx:id="subjectDistance" />
         <Button fx:id="autofocus" mnemonicParsing="false" text="Autofocus" />
       </children>

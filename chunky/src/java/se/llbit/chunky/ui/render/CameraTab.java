@@ -45,6 +45,7 @@ import se.llbit.chunky.renderer.scene.Camera;
 import se.llbit.chunky.renderer.scene.CameraPreset;
 import se.llbit.chunky.renderer.scene.Scene;
 import se.llbit.chunky.ui.DoubleAdjuster;
+import se.llbit.chunky.ui.IntegerAdjuster;
 import se.llbit.chunky.ui.RenderControlsFxController;
 import se.llbit.json.JsonMember;
 import se.llbit.json.JsonObject;
@@ -74,6 +75,7 @@ public class CameraTab extends ScrollPane implements RenderControlsTab, Initiali
   @FXML private ChoiceBox<ProjectionMode> projectionMode;
   @FXML private DoubleAdjuster fov;
   @FXML private DoubleAdjuster dof;
+  @FXML private IntegerAdjuster bladeAmount;
   @FXML private DoubleAdjuster subjectDistance;
   @FXML private Button autofocus;
 
@@ -101,6 +103,7 @@ public class CameraTab extends ScrollPane implements RenderControlsTab, Initiali
     updateFov();
     updateDof();
     updateSubjectDistance();
+    updateBladeAmount();
   }
 
   @Override public String getTabTitle() {
@@ -117,6 +120,10 @@ public class CameraTab extends ScrollPane implements RenderControlsTab, Initiali
 
   private void updateSubjectDistance() {
     subjectDistance.set(scene.camera().getSubjectDistance());
+  }
+
+  private void updateBladeAmount() {
+    bladeAmount.set(scene.camera().getBladeAmount());
   }
 
   private void updateDof() {
@@ -156,6 +163,7 @@ public class CameraTab extends ScrollPane implements RenderControlsTab, Initiali
           updateFov();
           updateDof();
           updateSubjectDistance();
+          updateBladeAmount();
           updateCameraPosition();
           updateCameraDirection();
         } else {
@@ -188,6 +196,7 @@ public class CameraTab extends ScrollPane implements RenderControlsTab, Initiali
         updateFov();
         updateDof();
         updateSubjectDistance();
+        updateBladeAmount();
         updateCameraPosition();
         updateCameraDirection();
         cameras.getSelectionModel().selectedItemProperty().addListener(cameraSelectionListener);
@@ -264,6 +273,12 @@ public class CameraTab extends ScrollPane implements RenderControlsTab, Initiali
     dof.makeLogarithmic();
     dof.setMaxInfinity(true);
     dof.onValueChange(value -> scene.camera().setDof(value));
+
+    bladeAmount.setName("Blade amount");
+    bladeAmount.setRange(3, Camera.MAX_BLADE_AMOUNT);
+    bladeAmount.clampMin();
+    bladeAmount.setTooltip("Number of blades in the aperture.");
+    bladeAmount.onValueChange(value -> scene.camera().setBladeAmount(value));
 
     subjectDistance.setName("Subject distance");
     subjectDistance.setRange(Camera.MIN_SUBJECT_DISTANCE, Camera.MAX_SUBJECT_DISTANCE);

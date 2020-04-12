@@ -79,6 +79,11 @@ public class Camera implements JsonSerializable {
   public static final double MAX_DOF = 5000;
 
   /**
+   * Maximum blade amount.
+   */
+  public static final double MAX_BLADE_AMOUNT = 12;
+
+  /**
    * Minimum recommended subject distance.
    */
   public static final double MIN_SUBJECT_DISTANCE = 0.01;
@@ -139,6 +144,8 @@ public class Camera implements JsonSerializable {
   private double worldWidth = 100;
 
   private double subjectDistance = 2;
+  
+  private int bladeAmount = 6;
 
   public String name = "camera 1";
 
@@ -166,6 +173,7 @@ public class Camera implements JsonSerializable {
     projectionMode = other.projectionMode;
     fov = other.fov;
     subjectDistance = other.subjectDistance;
+    bladeAmount = other.bladeAmount;
     worldWidth = other.worldWidth;
     initProjector();
     updateTransform();
@@ -181,10 +189,12 @@ public class Camera implements JsonSerializable {
         new SphericalApertureProjector(p, subjectDistance / dof, subjectDistance);
   }
   
-  private Projector applyMultiBladeDoF(Projector p, int bladeAmount, double bladeRotation, double lensRatio) {
+  private Projector applyMultiBladeDoF(Projector p, double bladeRotation, double lensRatio) {
 	    return infiniteDoF() ?
 	        p :
-	        new MultiBladeApertureProjector(p, subjectDistance / dof, subjectDistance, bladeAmount, bladeRotation, lensRatio);
+	        bladeAmount <= 0 ?
+	            applySphericalDoF(p) : 
+	            new MultiBladeApertureProjector(p, subjectDistance / dof, subjectDistance, bladeAmount, bladeRotation, lensRatio);
 	  }
 
   /**
@@ -196,14 +206,8 @@ public class Camera implements JsonSerializable {
         Log.errorf("Unknown projection mode: %s, using standard mode", projectionMode);
       case PINHOLE:
         return applyDoF(new PinholeProjector(fov), subjectDistance);
-      case OCTA_ANAMORPHIC:
-          return applyMultiBladeDoF(new PinholeProjector(fov), 6, 0.0, 1.5);
-      case HEXA:
-          return applyMultiBladeDoF(new PinholeProjector(fov), 6, 0.0, 1.);
-      case PENTA:
-          return applyMultiBladeDoF(new PinholeProjector(fov), 5, 0.0, 1.);
-      case DIAMOND:
-          return applyMultiBladeDoF(new PinholeProjector(fov), 4, Math.PI/4.0, 1.);
+      case BLADED:
+          return applyMultiBladeDoF(new PinholeProjector(fov), 0.0, 1.);
       case PARALLEL:
         return applyDoF(
             new ForwardDisplacementProjector(new ParallelProjector(worldWidth, fov), -worldWidth),
@@ -312,8 +316,25 @@ public class Camera implements JsonSerializable {
   public double getSubjectDistance() {
     return subjectDistance;
   }
-
+  
   /**
+   * 
+   * @return the blade amount
+   */
+  public int getBladeAmount() {
+	return bladeAmount;
+  }
+  
+  /**
+   * 
+   * @param bladeAmount the blade amount
+   */
+  public synchronized void setBladeAmount(int value) {
+  	this.bladeAmount = value;
+    scene.refresh();
+  }
+
+/**
    * Move camera forward
    */
   public synchronized void moveForward(double v) {
