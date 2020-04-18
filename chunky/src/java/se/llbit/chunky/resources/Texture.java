@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
 import org.apache.commons.math3.util.FastMath;
 import se.llbit.chunky.PersistentSettings;
 import se.llbit.chunky.renderer.scene.Scene;
+import se.llbit.chunky.resources.texturepack.FontTexture;
 import se.llbit.math.ColorUtil;
 import se.llbit.math.QuickMath;
 import se.llbit.math.Ray;
@@ -55,6 +56,7 @@ public class Texture {
   public static Texture black = new SolidColorTexture(new Vector4(0, 0, 0, 1));
 
   public static final Texture paintings = new Texture();
+  public static final FontTexture fonts = new FontTexture();
 
   public static final Texture air = new Texture("air");
   public static final Texture stone = new Texture("stone");
@@ -825,6 +827,8 @@ public class Texture {
   public static final Texture netherSprouts = new Texture();
   public static final Texture warpedRoots = new Texture();
   public static final Texture crimsonRoots = new Texture();
+  public static final Texture warpedRootsPot = new Texture();
+  public static final Texture crimsonRootsPot = new Texture();
   public static final Texture cryingObsidian = new Texture();
   public static final Texture warpedStem = new Texture();
   public static final Texture warpedStemTop = new Texture();
@@ -874,6 +878,7 @@ public class Texture {
   public static final Texture polishedBlackstoneBricks = new Texture();
   public static final Texture crackedPolishedBlackstoneBricks = new Texture();
   public static final Texture quartzBricks = new Texture();
+  public static final Texture chain = new Texture();
 
   /** Banner base texture. */
   public static final Texture bannerBase = new Texture();

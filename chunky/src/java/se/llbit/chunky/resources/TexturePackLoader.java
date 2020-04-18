@@ -25,7 +25,8 @@ import se.llbit.chunky.resources.texturepack.ChestTexture;
 import se.llbit.chunky.resources.texturepack.CloudsTexture;
 import se.llbit.chunky.resources.texturepack.EntityTextureLoader;
 import se.llbit.chunky.resources.texturepack.FoliageColorTexture;
-import se.llbit.chunky.resources.texturepack.FontTextureLoader;
+import se.llbit.chunky.resources.texturepack.AsciiFontTextureLoader;
+import se.llbit.chunky.resources.texturepack.JsonFontTextureLoader;
 import se.llbit.chunky.resources.texturepack.GrassColorTexture;
 import se.llbit.chunky.resources.texturepack.IndexedTexture;
 import se.llbit.chunky.resources.texturepack.LargeChestTexture;
@@ -2421,7 +2422,9 @@ public class TexturePackLoader {
     allTextures.put("paintings_zetterstrand",
         new SimpleTexture("assets/minecraft/textures/painting/paintings_kristoffer_zetterstrand",
             Texture.paintings));
-    allTextures.put("font_default", new FontTextureLoader("assets/minecraft/font/default.json"));
+    allTextures.put("font_default", new AlternateTextures(
+        new JsonFontTextureLoader("assets/minecraft/font/default.json"), // MC 1.13
+        new AsciiFontTextureLoader("assets/minecraft/textures/font/ascii"))); // MC 1.6
 
     allTextures.put("alex",
         new ThinArmEntityTextureLoader("assets/minecraft/textures/entity/alex", Texture.alex));
@@ -3412,6 +3415,8 @@ public class TexturePackLoader {
     addSimpleTexture("assets/minecraft/textures/block/nether_sprouts", Texture.netherSprouts);
     addSimpleTexture("assets/minecraft/textures/block/warped_roots", Texture.warpedRoots);
     addSimpleTexture("assets/minecraft/textures/block/crimson_roots", Texture.crimsonRoots);
+    addSimpleTexture("assets/minecraft/textures/block/warped_roots_pot", Texture.warpedRootsPot);
+    addSimpleTexture("assets/minecraft/textures/block/crimson_roots_pot", Texture.crimsonRootsPot);
     addSimpleTexture("assets/minecraft/textures/block/crying_obsidian", Texture.cryingObsidian);
     addSimpleTexture("assets/minecraft/textures/block/warped_stem", Texture.warpedStem);
     addSimpleTexture("assets/minecraft/textures/block/warped_stem_top", Texture.warpedStemTop);
@@ -3460,6 +3465,7 @@ public class TexturePackLoader {
     addSimpleTexture("assets/minecraft/textures/block/polished_blackstone_bricks", Texture.polishedBlackstoneBricks);
     addSimpleTexture("assets/minecraft/textures/block/cracked_polished_blackstone_bricks", Texture.crackedPolishedBlackstoneBricks);
     addSimpleTexture("assets/minecraft/textures/block/quartz_bricks", Texture.quartzBricks);
+    addSimpleTexture("assets/minecraft/textures/block/chain", Texture.chain);
   }
 
   private static void addSimpleTexture(String file, Texture texture) {
