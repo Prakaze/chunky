@@ -24,6 +24,7 @@ import se.llbit.math.Ray;
 import se.llbit.math.Triangle;
 import se.llbit.math.Vector3;
 import se.llbit.math.Vector4;
+import se.llbit.util.OctaveImprovedNoise;
 
 /**
  * A water block. The height of the top water block is slightly
@@ -73,31 +74,12 @@ public class WaterModel {
   static final double height[] =
       {14 / 16., 12.25 / 16., 10.5 / 16, 8.75 / 16, 7. / 16, 5.25 / 16, 3.5 / 16, 1.75 / 16};
 
-  private static final float[][][] normalMap;
-  private static final int normalMapW;
-
   /**
    * Block data offset for water above flag
    */
   private static final int FULL_BLOCK = 12;
 
   static {
-    // precompute normal map
-    Texture waterHeight = new Texture("water-height");
-    normalMapW = waterHeight.getWidth();
-    normalMap = new float[normalMapW][normalMapW][2];
-    for (int u = 0; u < normalMapW; ++u) {
-      for (int v = 0; v < normalMapW; ++v) {
-
-        float hx0 = (waterHeight.getColorWrapped(u, v) & 0xFF) / 255.f;
-        float hx1 = (waterHeight.getColorWrapped(u + 1, v) & 0xFF) / 255.f;
-        float hz0 = (waterHeight.getColorWrapped(u, v) & 0xFF) / 255.f;
-        float hz1 = (waterHeight.getColorWrapped(u, v + 1) & 0xFF) / 255.f;
-        normalMap[u][v][0] = hx1 - hx0;
-        normalMap[u][v][1] = hz1 - hz0;
-      }
-    }
-
     // precompute water triangles
     for (int i = 0; i < 8; ++i) {
       double c0 = height[i];
@@ -333,22 +315,25 @@ public class WaterModel {
   }
 
   /**
-   * Displace the normal using the water displacement map.
+   * Displace the normal using the perlin noise texture.
    */
   public static void doWaterDisplacement(Ray ray) {
-    int w = (1 << 4);
-    double x = ray.o.x / w - QuickMath.floor(ray.o.x / w);
-    double z = ray.o.z / w - QuickMath.floor(ray.o.z / w);
-    int u = (int) (x * normalMapW - Ray.EPSILON);
-    int v = (int) ((1 - z) * normalMapW - Ray.EPSILON);
-    ray.n.set(normalMap[u][v][0], .15f, normalMap[u][v][1]);
-    w = (1 << 1);
-    x = ray.o.x / w - QuickMath.floor(ray.o.x / w);
-    z = ray.o.z / w - QuickMath.floor(ray.o.z / w);
-    u = (int) (x * normalMapW - Ray.EPSILON);
-    v = (int) ((1 - z) * normalMapW - Ray.EPSILON);
-    ray.n.x += normalMap[u][v][0] / 2;
-    ray.n.z += normalMap[u][v][1] / 2;
+    
+    // artistic control over the displacement
+    double waveScale = 2.;      // the horizontal scale of the waves
+    double waveDepth = .05;     // the vertical scale of the waves
+    int waveDetail = 2;         // the amount of detail of the waves
+    double t = 0.;              // the time of the animation;
+    
+    
+    double h = Ray.EPSILON;
+    Vector3 p = new Vector3(ray.o);
+    p.scale(waveScale);
+    // "Bumping" the texture to get the normal
+    ray.n.x = waveDepth * (OctaveImprovedNoise.noise(p.x + h, p.z, t, waveDetail)
+                         - OctaveImprovedNoise.noise(p.x - h, p.z, t, waveDetail)) / (2.*h);
+    ray.n.z = waveDepth * (OctaveImprovedNoise.noise(p.x, p.z + h, t, waveDetail)
+                         - OctaveImprovedNoise.noise(p.x, p.z - h, t, waveDetail)) / (2.*h);
     ray.n.normalize();
   }
 }
